@@ -1,7 +1,7 @@
-package com.clp.clpservice.sit;
+package com.clp.clpservice.sit.controller;
 
 import com.clp.clpservice.sit.response.SiteRes;
-import com.clp.clpservice.sit.response.SpaceRes;
+import com.clp.clpservice.spa.response.SpaceRes;
 import com.clp.stexample.common.model.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Site", description = "CLP 기능 중 사이트 관리 API 목록입니다.")
-public class SitController {
+public class SiteController {
 
     LocalDateTime ldt = LocalDateTime.of(2030, 1, 1, 13, 30, 50);
     ZonedDateTime zdt1 = ZonedDateTime.of(ldt, ZoneId.of("Asia/Seoul"));

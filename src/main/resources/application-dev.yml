@@ -1,0 +1,34 @@
+spring:
+  output:
+    ansi:
+      enabled: always
+
+smart-things:
+  token: 4c5fe7ce-023c-48e5-ab7d-13129fe5a3c1
+
+api:
+  base:
+    url: https://api.smartthings.com/v1
+
+springdoc:
+  # springdoc 라이브러리의 버전을 설정
+  version: '@project.version@'
+  # API 문서가 제공될 경로를 /api-docs로 설정한다.
+  api-docs:
+    path: /api-docs
+  # API에서 사용할 기본 미디어 유형
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  # Swagger UI의 외관 및 동작을 설정
+  swagger-ui:
+    operations-sorter: alpha                   # UI에서 작업을 알파벳 순서로 정렬
+    tags-sorter: alpha                         # UI에서 태그를 알파벳 순서로 정렬
+    path: /swagger-ui.html                     # UI에 액세스할 수 있는 경로
+    disable-swagger-default-url: true          # 기본 Swagger URL을 비활성화하고 명시적인 경로 /swagger-ui.html로만 접근
+    display-query-params-without-oauth2: true  # Swagger UI에서 OAuth2 없이 쿼리 매개변수를 표시
+    doc-expansion: none                        # Swagger UI에서 문서 확장을 비활성화
+  # API 문서화에 포함할 경로 패턴을 설정. 아래 해당하는 모든 경로가 문서화됨
+  paths-to-match:
+    - /sit/**
+
+debug: true

@@ -20,11 +20,11 @@ public class ApiResponse<T> {
     }
 
     public static <T> ApiResponse<T> success(T data, HttpStatusCode statusCode) {
-        return new ApiResponse<>(data, statusCode.value(), "Success", null);
+        return new ApiResponse<>(data, statusCode.value(), "Success", new ErrorResponse());
     }
 
     public static <T> ApiResponse<T> error(HttpStatusCode statusCode, String message) {
-        return new ApiResponse<>(null, statusCode.value(), message, null);
+        return new ApiResponse<>(null, statusCode.value(), message, new ErrorResponse());
     }
 
     public static <T> ApiResponse<T> error(HttpStatusCode statusCode, ErrorResponse errorResponse) {

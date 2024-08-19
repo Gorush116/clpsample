@@ -12,4 +12,5 @@ public class ErrorDetail {
     private String message;
     private String target;
     private List<ErrorDetail> details;
+
 }
