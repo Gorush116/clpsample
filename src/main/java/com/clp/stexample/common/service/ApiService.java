@@ -4,6 +4,9 @@ import com.clp.stexample.common.enums.ApiEndpoint;
 import com.clp.stexample.common.error.ErrorResponse;
 import com.clp.stexample.common.error.HTTPErrorCode;
 import com.clp.stexample.common.model.ApiResponse;
+import com.clp.stexample.common.response.ApiErrorResponse;
+import com.clp.stexample.common.response.CommonResponse;
+import com.clp.stexample.common.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -139,4 +142,28 @@ public class ApiService {
     }
     // RestClient 끝
 
+
+
+
+    public CommonResponse test(ApiEndpoint endpoint, Object... uriVariables) {
+        String url = buildUrl(endpoint, uriVariables);
+        HttpEntity<?> entity = new HttpEntity<>(null, createHeaders());
+        try {
+            // HTTP METHOD & URI SET
+            var request = restClient.method(endpoint.getMethod())
+                    .uri(url, uriVariables)
+                    .headers(headersSpec -> headersSpec.putAll(entity.getHeaders()));
+
+            // Optional을 사용하여 body가 있을 때만 SET
+            Optional.ofNullable(entity.getBody()).ifPresent(request::body);
+
+            // SEND REQUEST & GET RESPONSE
+            Map<String, Object> responseBody = request.retrieve()
+                    .body(new ParameterizedTypeReference<>() {});
+
+            return SuccessResponse.of(responseBody);
+        } catch (HttpClientErrorException | HttpServerErrorException ex) {
+            return ApiErrorResponse.fromException(ex);
+        }
+    }
 }
