@@ -143,14 +143,26 @@ public class ApiService {
     // RestClient 끝
 
 
+    // 공통모듈 시작
+    public CommonResponse call(ApiEndpoint endpoint, Object... uriVariables) {
+        return callWithRequest(endpoint, null, uriVariables);
+    }
 
-
-    public CommonResponse test(ApiEndpoint endpoint, Object... uriVariables) {
+    public CommonResponse callWithRequest(ApiEndpoint endpoint, Object request, Object... uriVariables) {
         String url = buildUrl(endpoint, uriVariables);
-        HttpEntity<?> entity = new HttpEntity<>(null, createHeaders());
+        HttpEntity<?> entity = new HttpEntity<>(request, createHeaders());
+        return exchangeFor(url, endpoint.getMethod(), entity, uriVariables);
+    }
+
+    public CommonResponse exchangeFor(
+            String url,
+            HttpMethod method,
+            HttpEntity<?> entity,
+            Object... uriVariables
+    )  {
         try {
             // HTTP METHOD & URI SET
-            var request = restClient.method(endpoint.getMethod())
+            var request = restClient.method(method)
                     .uri(url, uriVariables)
                     .headers(headersSpec -> headersSpec.putAll(entity.getHeaders()));
 
@@ -166,4 +178,5 @@ public class ApiService {
             return ApiErrorResponse.fromException(ex);
         }
     }
+    // 공통모듈 끝
 }
