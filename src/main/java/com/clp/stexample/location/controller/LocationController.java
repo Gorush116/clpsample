@@ -1,6 +1,6 @@
 package com.clp.stexample.location.controller;
 
-import com.clp.stexample.common.response.CommonResponse;
+import com.clp.stexample.common.response.ApiResponse;
 import com.clp.stexample.common.service.CommonApiService;
 import com.clp.stexample.location.request.LocationReq;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,7 +25,7 @@ public class LocationController {
 
     @Operation(summary = "장소 목록 조회", description = "장소 목록을 가져온다.")
     @GetMapping("/locations")
-    public CommonResponse getLocationList() {
+    public ApiResponse getLocationList() {
         return apiService.call(LIST_LOCATIONS);
     }
 
@@ -46,12 +46,12 @@ public class LocationController {
     @Parameter(name="DVC_INFM_SND_DTM", description="디바이스알림발송일시")
     @Parameter(name="DVC_MSG_CN", description="디바이스메시지내용")
     @PostMapping("/locations")
-    public CommonResponse createLocation(@Valid @RequestBody LocationReq request) {
+    public ApiResponse createLocation(@Valid @RequestBody LocationReq request) {
         return apiService.callWithRequest(CREATE_A_LOCATION, request);
     }
 
     @PutMapping("/locations/{locationId}")
-    public CommonResponse updateLocation(
+    public ApiResponse updateLocation(
             @Valid @RequestBody Map<String, Object> request,
             @PathVariable String locationId
     ) {
@@ -59,7 +59,7 @@ public class LocationController {
     }
 
     @PatchMapping("/locations/{locationId}")
-    public CommonResponse patchLocation(
+    public ApiResponse patchLocation(
             @Valid @RequestBody Map<String, Object> request,
             @PathVariable String locationId
     ) {
@@ -67,22 +67,22 @@ public class LocationController {
     }
 
     @DeleteMapping("/locations/{locationId}")
-    public CommonResponse deleteLocation(@PathVariable String locationId) {
+    public ApiResponse deleteLocation(@PathVariable String locationId) {
         return apiService.call(DELETE_A_LOCATION, locationId);
     }
 
     @GetMapping("/locations/{locationId}")
-    public CommonResponse getRoomList(@PathVariable String locationId) {
+    public ApiResponse getRoomList(@PathVariable String locationId) {
         return apiService.call(LIST_ROOMS, locationId);
     }
 
     @GetMapping("/locations/{locationId}/rooms/{roomId}")
-    public CommonResponse getRoom(@PathVariable String locationId, @PathVariable String roomId, @RequestBody Map<String, Object> request) {
+    public ApiResponse getRoom(@PathVariable String locationId, @PathVariable String roomId, @RequestBody Map<String, Object> request) {
         return apiService.callWithRequest(LIST_ROOMS, request, locationId, roomId);
     }
 
     @GetMapping("/request")
-    public CommonResponse getParam(@RequestParam Map<String, Object> request) {
+    public ApiResponse getParam(@RequestParam Map<String, Object> request) {
         return apiService.callWithRequest(LIST_LOCATIONS, request);
     }
 }

@@ -14,7 +14,7 @@ import java.util.Map;
 
 @Getter
 @Slf4j
-public class ApiFailResponse<T> extends CommonResponse {
+public class ApiFailResponse<T> extends ApiResponse {
 
     private final T inputData;
     private final String errorCode;

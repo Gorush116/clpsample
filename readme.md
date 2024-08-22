@@ -119,7 +119,7 @@ CLP Service 외부 REST API 통신을 위한 공통 인터페이스의 목적과
 ```yaml
 # SmartThings token
 smart-things:
-  token: 개인 토큰값 입력
+  token: 발급받은 토큰값 입력
 
 # API 기본 주소
 api:
@@ -151,6 +151,7 @@ public class RestClientConfig {
 
 ### 3-1. API 호출 방법
 
+`[공통 인터페이스 API 서비스 클래스]`
 
 
 ### 3-2. HTTP 메소드 사용법
