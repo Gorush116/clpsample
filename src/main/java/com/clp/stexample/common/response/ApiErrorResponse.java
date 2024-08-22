@@ -31,17 +31,14 @@ public class ApiErrorResponse extends CommonResponse {
         this.errorDetails = errorDetails;
     }
 
-    // 에러 응답을 쉽게 생성할 수 있는 정적 메서드
     public static ApiErrorResponse of(String errorCode, Map<String, Object> errorDetails) {
         return new ApiErrorResponse("error", "Operation failed", errorCode, errorDetails);
     }
 
-    // HttpStatus로 에러 응답 생성하는 정적 메서드
     public static ApiErrorResponse from(HttpStatus httpStatus, Map<String, Object> errorDetails) {
         return new ApiErrorResponse(httpStatus, errorDetails);
     }
 
-    // 또 다른 정적 메서드: 상태 코드만으로 에러 응답 생성
     public static ApiErrorResponse fromException(HttpStatusCodeException e) {
         log.error("HttpStatusCodeException occurred : {} ", e.getMessage(), e);
         return new ApiErrorResponse(resolveHttpStatus(e), parseErrorDetails(e));
@@ -59,10 +56,10 @@ public class ApiErrorResponse extends CommonResponse {
     private static Map<String, Object> parseErrorDetails(HttpStatusCodeException e) {
         Map<String, Object> errorDetails = new HashMap<>();
         try {
-            // 예외의 응답 본문을 JSON으로 변환
             if (StringUtils.isEmpty(e.getResponseBodyAsString())) {
                 throw e;
             } else {
+                // 예외의 응답 본문을 JSON으로 변환
                 ObjectMapper mapper = new ObjectMapper();
                 errorDetails = mapper.readValue(e.getResponseBodyAsString(), new TypeReference<>() {});
             }

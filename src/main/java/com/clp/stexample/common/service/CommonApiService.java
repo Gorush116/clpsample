@@ -1,9 +1,6 @@
 package com.clp.stexample.common.service;
 
 import com.clp.stexample.common.enums.ApiEndpoint;
-import com.clp.stexample.common.error.ErrorResponse;
-import com.clp.stexample.common.error.HTTPErrorCode;
-import com.clp.stexample.common.model.ApiResponse;
 import com.clp.stexample.common.response.ApiErrorResponse;
 import com.clp.stexample.common.response.CommonResponse;
 import com.clp.stexample.common.response.SuccessResponse;
@@ -30,7 +27,6 @@ public class CommonApiService {
     @Value("${smart-things.token}")
     private String token;
 
-    // 공통모듈 시작
     public CommonResponse call(ApiEndpoint endpoint, Object... uriVariables) {
         return callWithRequest(endpoint, null, uriVariables);
     }
@@ -60,14 +56,11 @@ public class CommonApiService {
             Map<String, Object> responseBody = request.retrieve()
                     .body(new ParameterizedTypeReference<>() {});
 
-            throw new HttpClientErrorException(HttpStatus.FORBIDDEN);
-
-//            return SuccessResponse.of(responseBody);
+            return SuccessResponse.of(responseBody);
         } catch (HttpClientErrorException | HttpServerErrorException ex) {
             return ApiErrorResponse.fromException(ex);
         }
     }
-    // 공통모듈 끝
 
     // Header 생성
     private HttpHeaders createHeaders() {
