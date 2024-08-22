@@ -175,7 +175,7 @@ public class ApiService {
 
             return SuccessResponse.of(responseBody);
         } catch (HttpClientErrorException | HttpServerErrorException ex) {
-            return ApiErrorResponse.fromException(ex);
+            return ApiErrorResponse.fromHttpException(ex, entity.getBody());
         }
     }
     // 공통모듈 끝

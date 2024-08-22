@@ -14,34 +14,37 @@ import java.util.Map;
 
 @Getter
 @Slf4j
-public class ApiErrorResponse extends CommonResponse {
+public class ApiErrorResponse<T> extends CommonResponse {
 
+    private final T inputData;
     private final String errorCode;
     private final Map<String, Object> errorDetails;
 
-    public ApiErrorResponse(String status, String message, String errorCode, Map<String, Object> errorDetails) {
+    public ApiErrorResponse(String status, String message, String errorCode, Map<String, Object> errorDetails, T inputData) {
         super(status, message);
         this.errorCode = errorCode;
         this.errorDetails = errorDetails;
+        this.inputData = inputData;
     }
 
-    public ApiErrorResponse(HttpStatus httpStatus, Map<String, Object> errorDetails) {
+    public ApiErrorResponse(HttpStatus httpStatus, Map<String, Object> errorDetails, T inputData) {
         super("error", httpStatus.getReasonPhrase());
-        this.errorCode = String.valueOf(httpStatus.value());
+        this.errorCode = String.valueOf(httpStatus);
         this.errorDetails = errorDetails;
+        this.inputData = inputData;
     }
 
-    public static ApiErrorResponse of(String errorCode, Map<String, Object> errorDetails) {
-        return new ApiErrorResponse("error", "Operation failed", errorCode, errorDetails);
+    public static <T> ApiErrorResponse<T> of(String errorCode, Map<String, Object> errorDetails) {
+        return new ApiErrorResponse<>("error", "Operation failed", errorCode, errorDetails, null);
     }
 
-    public static ApiErrorResponse from(HttpStatus httpStatus, Map<String, Object> errorDetails) {
-        return new ApiErrorResponse(httpStatus, errorDetails);
+    public static <T> ApiErrorResponse<T> from(HttpStatus httpStatus, Map<String, Object> errorDetails) {
+        return new ApiErrorResponse<>(httpStatus, errorDetails, null);
     }
 
-    public static ApiErrorResponse fromException(HttpStatusCodeException e) {
+    public static <T> ApiErrorResponse<T> fromHttpException(HttpStatusCodeException e, T inputData) {
         log.error("HttpStatusCodeException occurred : {} ", e.getMessage(), e);
-        return new ApiErrorResponse(resolveHttpStatus(e), parseErrorDetails(e));
+        return new ApiErrorResponse<>(resolveHttpStatus(e), parseErrorDetails(e), inputData);
     }
 
     private static HttpStatus resolveHttpStatus(HttpStatusCodeException e) {

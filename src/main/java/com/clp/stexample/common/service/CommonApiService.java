@@ -3,7 +3,6 @@ package com.clp.stexample.common.service;
 import com.clp.stexample.common.enums.ApiEndpoint;
 import com.clp.stexample.common.response.ApiErrorResponse;
 import com.clp.stexample.common.response.CommonResponse;
-import com.clp.stexample.common.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -56,9 +55,11 @@ public class CommonApiService {
             Map<String, Object> responseBody = request.retrieve()
                     .body(new ParameterizedTypeReference<>() {});
 
-            return SuccessResponse.of(responseBody);
+            throw new RuntimeException();
+//            return SuccessResponse.of(responseBody);
         } catch (HttpClientErrorException | HttpServerErrorException ex) {
-            return ApiErrorResponse.fromException(ex);
+            // 예외와 함께 input data return
+            return ApiErrorResponse.fromHttpException(ex, entity.getBody());
         }
     }
 
