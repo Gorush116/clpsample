@@ -6,36 +6,42 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpStatusCodeException;
 
 import java.util.Map;
+import java.util.Optional;
 
 // 해당 클래스가 전역적인 예외처리를 담당함
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
     
+    // 특정 예외 처리
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<String> handleApiException(ApiException ex) {
-        HttpStatus status = HttpStatus.resolve(ex.getStatusCode());
-        if (status == null) {
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
-        }
+        HttpStatus status = Optional.ofNullable(HttpStatus.resolve(ex.getStatusCode()))
+                .orElse(HttpStatus.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(ex.getMessage(), status);
     }
 
     // 기타 예외 처리
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleGlobalException(Exception ex) {
-        log.error("Unhandled exception occurred: ", ex);
+        log.error("Unhandled exception occurred : {} ", ex.getMessage(), ex);
 
         // 기본 상태 코드 설정
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
+        if (ex instanceof HttpStatusCodeException) {
+            // 예외가 HttpStatusCodeException일 경우, 상태 코드를 추출
+            status = HttpStatus.valueOf(((HttpStatusCodeException) ex).getStatusCode().value());
+        }
+
         ApiErrorResponse response = new ApiErrorResponse(
                 status,
-                Map.of("message", "An unexpected error occurred.")
+                Map.of("message", "An unexpected error occurred " + ex.getMessage())
         );
 
-        return ResponseEntity.status(status).body(response);
+        return new ResponseEntity<>(response, status);
     }
 }

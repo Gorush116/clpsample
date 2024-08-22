@@ -3,6 +3,7 @@ package com.clp.stexample.common.response;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.common.util.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +45,7 @@ public class ApiErrorResponse extends CommonResponse {
 
     // 또 다른 정적 메서드: 상태 코드만으로 에러 응답 생성
     public static ApiErrorResponse fromException(HttpStatusCodeException e) {
-        log.error("HttpStatusCodeException occurred", e);
+        log.error("HttpStatusCodeException occurred : {} ", e.getMessage(), e);
         return new ApiErrorResponse(resolveHttpStatus(e), parseErrorDetails(e));
     }
 
@@ -61,8 +62,12 @@ public class ApiErrorResponse extends CommonResponse {
         Map<String, Object> errorDetails = new HashMap<>();
         try {
             // 예외의 응답 본문을 JSON으로 변환
-            ObjectMapper mapper = new ObjectMapper();
-            errorDetails = mapper.readValue(e.getResponseBodyAsString(), new TypeReference<>() {});
+            if (StringUtils.isEmpty(e.getResponseBodyAsString())) {
+                throw e;
+            } else {
+                ObjectMapper mapper = new ObjectMapper();
+                errorDetails = mapper.readValue(e.getResponseBodyAsString(), new TypeReference<>() {});
+            }
         } catch (JsonProcessingException ex) {
             log.error("Failed to parse error details from response: {}", ex.getMessage(), ex);
             errorDetails.put("message", "Failed to parse error details from response.");
