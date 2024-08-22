@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.common.util.StringUtils;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -14,12 +13,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Getter
-@Setter
 @Slf4j
 public class ApiErrorResponse extends CommonResponse {
 
-    private String errorCode;
-    private Map<String, Object> errorDetails;
+    private final String errorCode;
+    private final Map<String, Object> errorDetails;
 
     public ApiErrorResponse(String status, String message, String errorCode, Map<String, Object> errorDetails) {
         super(status, message);
