@@ -1,6 +1,7 @@
 package com.clp.stexample.common.service;
 
 import com.clp.stexample.common.enums.ApiEndpoint;
+import com.clp.stexample.common.exception.ApiException;
 import com.clp.stexample.common.response.ApiFailResponse;
 import com.clp.stexample.common.response.CommonResponse;
 import com.clp.stexample.common.response.SuccessResponse;
@@ -55,14 +56,16 @@ public class CommonApiService {
 
             // SEND REQUEST & GET RESPONSE
             Map<String, Object> responseBody = request.retrieve()
-                    .body(new ParameterizedTypeReference<>() {
-                    });
+                    .body(new ParameterizedTypeReference<>() {});
 
             return SuccessResponse.of(responseBody);
 
         } catch (HttpStatusCodeException ex) {
             log.error("HttpStatusCodeException occurred when calling : {} ", url, ex);
             return ApiFailResponse.fromHttpException(ex, entity.getBody());
+        } catch (ApiException ex) {
+            log.error("ApiException occurred when calling : {} ", url, ex);
+            throw new ApiException(ex.getMessage(), 40001);
         } catch (Exception ex) {
             log.error("Exception occurred when calling : {}", url, ex);
             return ApiFailResponse.fromException(ex, entity.getBody());
