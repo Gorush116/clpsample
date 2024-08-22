@@ -14,37 +14,43 @@ import java.util.Map;
 
 @Getter
 @Slf4j
-public class ApiErrorResponse<T> extends CommonResponse {
+public class ApiFailResponse<T> extends CommonResponse {
 
     private final T inputData;
     private final String errorCode;
     private final Map<String, Object> errorDetails;
 
-    public ApiErrorResponse(String status, String message, String errorCode, Map<String, Object> errorDetails, T inputData) {
+    public ApiFailResponse(String status, String message, String errorCode, Map<String, Object> errorDetails, T inputData) {
         super(status, message);
         this.errorCode = errorCode;
         this.errorDetails = errorDetails;
         this.inputData = inputData;
     }
 
-    public ApiErrorResponse(HttpStatus httpStatus, Map<String, Object> errorDetails, T inputData) {
+    public ApiFailResponse(HttpStatus httpStatus, Map<String, Object> errorDetails, T inputData) {
         super("error", httpStatus.getReasonPhrase());
         this.errorCode = String.valueOf(httpStatus);
         this.errorDetails = errorDetails;
         this.inputData = inputData;
     }
 
-    public static <T> ApiErrorResponse<T> of(String errorCode, Map<String, Object> errorDetails) {
-        return new ApiErrorResponse<>("error", "Operation failed", errorCode, errorDetails, null);
+    public ApiFailResponse(Exception e, T inputData) {
+        super("Exception", e.getMessage());
+        this.errorCode = null;
+        this.errorDetails = Map.of("Exception", e.toString());
+        this.inputData = inputData;
     }
 
-    public static <T> ApiErrorResponse<T> from(HttpStatus httpStatus, Map<String, Object> errorDetails) {
-        return new ApiErrorResponse<>(httpStatus, errorDetails, null);
+    public static <T> ApiFailResponse<T> of(String errorCode, Map<String, Object> errorDetails) {
+        return new ApiFailResponse<>("error", "Operation failed", errorCode, errorDetails, null);
     }
 
-    public static <T> ApiErrorResponse<T> fromHttpException(HttpStatusCodeException e, T inputData) {
-        log.error("HttpStatusCodeException occurred : {} ", e.getMessage(), e);
-        return new ApiErrorResponse<>(resolveHttpStatus(e), parseErrorDetails(e), inputData);
+    public static <T> ApiFailResponse<T> fromException(Exception e, T inputData) {
+        return new ApiFailResponse<>(e, inputData);
+    }
+
+    public static <T> ApiFailResponse<T> fromHttpException(HttpStatusCodeException e, T inputData) {
+        return new ApiFailResponse<>(resolveHttpStatus(e), parseErrorDetails(e), inputData);
     }
 
     private static HttpStatus resolveHttpStatus(HttpStatusCodeException e) {
@@ -59,8 +65,11 @@ public class ApiErrorResponse<T> extends CommonResponse {
     private static Map<String, Object> parseErrorDetails(HttpStatusCodeException e) {
         Map<String, Object> errorDetails = new HashMap<>();
         try {
+
+            // 응답 본문 가져오기
             if (StringUtils.isEmpty(e.getResponseBodyAsString())) {
-                throw e;
+                // 응답 본문이 없을 경우 기본 메시지 설정
+                errorDetails.put("message", "No error details provided in the response.");
             } else {
                 // 예외의 응답 본문을 JSON으로 변환
                 ObjectMapper mapper = new ObjectMapper();

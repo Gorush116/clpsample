@@ -4,7 +4,7 @@ import com.clp.stexample.common.enums.ApiEndpoint;
 import com.clp.stexample.common.error.ErrorResponse;
 import com.clp.stexample.common.error.HTTPErrorCode;
 import com.clp.stexample.common.model.ApiResponse;
-import com.clp.stexample.common.response.ApiErrorResponse;
+import com.clp.stexample.common.response.ApiFailResponse;
 import com.clp.stexample.common.response.CommonResponse;
 import com.clp.stexample.common.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
@@ -175,7 +175,7 @@ public class ApiService {
 
             return SuccessResponse.of(responseBody);
         } catch (HttpClientErrorException | HttpServerErrorException ex) {
-            return ApiErrorResponse.fromHttpException(ex, entity.getBody());
+            return ApiFailResponse.fromHttpException(ex, entity.getBody());
         }
     }
     // 공통모듈 끝

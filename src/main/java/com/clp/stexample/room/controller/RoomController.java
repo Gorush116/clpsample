@@ -60,4 +60,9 @@ public class RoomController {
     public CommonResponse getParam(@RequestParam Map<String, Object> request) {
         return apiService.callWithRequest(LIST_LOCATIONS, request);
     }
+
+    @GetMapping("/test4567/{locationId}/rooms/{roomId}")
+    public CommonResponse getRoom(@PathVariable String locationId, @PathVariable String roomId, @RequestBody Map<String, Object> request) {
+        return apiService.callWithRequest(LIST_ROOMS, request, locationId, roomId);
+    }
 }

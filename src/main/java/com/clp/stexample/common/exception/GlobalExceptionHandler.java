@@ -1,8 +1,7 @@
 package com.clp.stexample.common.exception;
 
-import com.clp.stexample.common.response.ApiErrorResponse;
+import com.clp.stexample.common.response.ApiFailResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,7 +26,7 @@ public class GlobalExceptionHandler {
 
     // 기타 예외 처리
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiErrorResponse<?>> handleGlobalException(Exception ex) {
+    public ResponseEntity<ApiFailResponse<?>> handleGlobalException(Exception ex) {
         log.error("Unhandled exception occurred : {} ", ex.getMessage(), ex);
 
         // 기본 상태 코드 설정
@@ -38,7 +37,7 @@ public class GlobalExceptionHandler {
             status = HttpStatus.valueOf(((HttpStatusCodeException) ex).getStatusCode().value());
         }
 
-        ApiErrorResponse<?> response = new ApiErrorResponse<>(
+        ApiFailResponse<?> response = new ApiFailResponse<>(
                 status,
                 Map.of("message", "An unexpected error occurred " + ex.getMessage()),
                 null

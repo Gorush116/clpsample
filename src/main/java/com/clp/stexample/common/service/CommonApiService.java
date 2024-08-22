@@ -1,9 +1,11 @@
 package com.clp.stexample.common.service;
 
 import com.clp.stexample.common.enums.ApiEndpoint;
-import com.clp.stexample.common.response.ApiErrorResponse;
+import com.clp.stexample.common.response.ApiFailResponse;
 import com.clp.stexample.common.response.CommonResponse;
+import com.clp.stexample.common.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -15,6 +17,7 @@ import java.util.Optional;
 
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class CommonApiService {
 
@@ -33,19 +36,18 @@ public class CommonApiService {
     public CommonResponse callWithRequest(ApiEndpoint endpoint, Object request, Object... uriVariables) {
         String url = buildUrl(endpoint, uriVariables);
         HttpEntity<?> entity = new HttpEntity<>(request, createHeaders());
-        return exchangeFor(url, endpoint.getMethod(), entity, uriVariables);
+        return exchangeFor(url, endpoint.getMethod(), entity);
     }
 
     public CommonResponse exchangeFor(
             String url,
             HttpMethod method,
-            HttpEntity<?> entity,
-            Object... uriVariables
+            HttpEntity<?> entity
     )  {
         try {
             // HTTP METHOD & URI SET
             var request = restClient.method(method)
-                    .uri(url, uriVariables)
+                    .uri(url)
                     .headers(headersSpec -> headersSpec.putAll(entity.getHeaders()));
 
             // Optional을 사용하여 body가 있을 때만 SET
@@ -53,13 +55,17 @@ public class CommonApiService {
 
             // SEND REQUEST & GET RESPONSE
             Map<String, Object> responseBody = request.retrieve()
-                    .body(new ParameterizedTypeReference<>() {});
+                    .body(new ParameterizedTypeReference<>() {
+                    });
 
-            throw new RuntimeException();
-//            return SuccessResponse.of(responseBody);
-        } catch (HttpClientErrorException | HttpServerErrorException ex) {
-            // 예외와 함께 input data return
-            return ApiErrorResponse.fromHttpException(ex, entity.getBody());
+            return SuccessResponse.of(responseBody);
+
+        } catch (HttpStatusCodeException ex) {
+            log.error("HttpStatusCodeException occurred when calling : {} ", url, ex);
+            return ApiFailResponse.fromHttpException(ex, entity.getBody());
+        } catch (Exception ex) {
+            log.error("Exception occurred when calling : {}", url, ex);
+            return ApiFailResponse.fromException(ex, entity.getBody());
         }
     }
 
