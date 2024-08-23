@@ -6,6 +6,7 @@ import com.clp.stexample.common.request.ApiRequest;
 import com.clp.stexample.common.response.ApiFailResponse;
 import com.clp.stexample.common.response.ApiResponse;
 import com.clp.stexample.common.response.ApiSuccessResponse;
+import com.clp.stexample.common.utils.RequestUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,8 +59,8 @@ public class ApiService {
      * @return API 요청의 응답
      */
     public ApiResponse callWithRequest(ApiEndpoint endpoint, Object request, Object... uriVariables) {
-        String uri = buildUri(endpoint, uriVariables);
-        HttpEntity<?> entity = new HttpEntity<>(request, createHeaders());
+        String uri = RequestUtils.buildUri(apiBaseUrl, endpoint, uriVariables);
+        HttpEntity<?> entity = new HttpEntity<>(request, RequestUtils.createHeaders(token));
         return exchange(uri, endpoint.getMethod(), entity);
     }
 
@@ -109,7 +110,7 @@ public class ApiService {
     }
 
     /**
-     * ApiRequest를 인자로 API 요청을 호출합니다.
+     * ApiRequest 클래스를 인자로 API 요청을 호출합니다.
      * 1. HTTP Method/uri/header SET
      * 2. (body 내용 존재시) body SET
      * 3. SEND REQUEST & GET RESPONSE
@@ -145,36 +146,5 @@ public class ApiService {
             log.error("Exception occurred when calling : {}", req.getUrl(), ex);
             return ApiFailResponse.fromException(ex, req.getBody());
         }
-    }
-
-    /**
-     * API 호출을 위한 HTTP 헤더를 반환합니다.
-     *
-     * @return HTTP 헤더
-     */
-    public HttpHeaders createHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + token);
-        headers.set("Content-Type", "application/json");
-        return headers;
-    }
-
-    /**
-     * API 호출을 위한 uri를 세팅합니다.
-     * - Enum path parameter 를 request pathParameter 에 매핑합니다.
-     * - 이 때, Enum 명시된 uri path parameter 순서와 uriVariables에 포함된 path parameter의 순서가 일치해야 합니다.
-     *   (동작방식 : for문을 통해 replaceFirst 메서드로 최초 문자열 대체)
-     * @param endpoint
-     * @param uriVariables
-     * @return uri
-     */
-    public String buildUri(ApiEndpoint endpoint, Object... uriVariables) {
-        String uri = apiBaseUrl + endpoint.getUrl();
-
-        for (Object uriVariable : uriVariables) {
-            uri = uri.replaceFirst("\\{[^/]+\\}", uriVariable.toString());
-        }
-
-        return uri;
     }
 }

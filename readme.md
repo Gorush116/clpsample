@@ -298,6 +298,14 @@ public ApiResponse get(@RequestBody Map<String, Object> request) {
 @RequiredArgsConstructor
 public class LocationService {
 
+   // Base Url 정보(자원정보 참조)
+   @Value("${api.base.url}")
+   private String apiBaseUrl;
+
+   // 토큰값
+   @Value("${smart-things.token}")
+   private String token;
+
    private final ApiService apiService;
 
    /**
@@ -311,9 +319,9 @@ public class LocationService {
     */
    public <T> ApiResponse callApi(HttpMethod method, Object req, Class<T> responseType) {
       return apiService.execute(ApiRequestBuilder.<T>builder()
-              .headers(apiService.createHeaders())
+              .headers(RequestUtils.createHeaders(token))
               .method(method)
-              .url("https://api.smartthings.com/v1/locations")
+              .url(apiBaseUrl + "/locations")
               .body(Objects.requireNonNullElse(req, new Object()))
               .responseType(responseType)
               .build()
