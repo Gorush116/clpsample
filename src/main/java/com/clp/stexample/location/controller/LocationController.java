@@ -1,18 +1,18 @@
 package com.clp.stexample.location.controller;
 
-import com.clp.stexample.common.request.ApiRequest;
 import com.clp.stexample.common.response.ApiResponse;
 import com.clp.stexample.common.service.ApiService;
 import com.clp.stexample.location.request.LocationReq;
 import com.clp.stexample.location.service.LocationService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.concurrent.Future;
 
 import static com.clp.stexample.common.enums.locations.Locations.*;
 import static com.clp.stexample.common.enums.locations.Locations.DELETE_A_LOCATION;
@@ -69,9 +69,44 @@ public class LocationController {
         return apiService.callWithRequest(LIST_ROOMS, request, locationId, roomId);
     }
 
-    @GetMapping("/call/api/request")
-    public ApiResponse getLocationList(@RequestBody Map<String, Object> request) {
-        return locationService.getLocationList(request);
+    // API REQUEST TEMPLATE START
+    @GetMapping("/call/api")
+    public ApiResponse get(@RequestBody Map<String, Object> request) {
+        return locationService.callApi(HttpMethod.GET, request, Object.class);
     }
+
+    @PostMapping("/call/api")
+    public ApiResponse post(@RequestBody LocationReq request) {
+        return locationService.callApi(HttpMethod.POST, request, Object.class);
+    }
+
+    @PutMapping("/call/api")
+    public ApiResponse put(@RequestBody Map<String, Object> request) {
+        return locationService.callApi(HttpMethod.PUT, request, Object.class);
+    }
+
+    @PatchMapping("/call/api")
+    public ApiResponse patch(@RequestBody Map<String, Object> request) {
+        return locationService.callApi(HttpMethod.PATCH, request, Object.class);
+    }
+
+    @DeleteMapping("/call/api")
+    public ApiResponse delete(@RequestBody Map<String, Object> request) {
+        return locationService.callApi(HttpMethod.DELETE, request, Object.class);
+    }
+    // API REQUEST TEMPLATE END
+
+
+    // ASYNC REQUEST START
+    @GetMapping("/call/api/sync")
+    public String syncGet(@RequestBody Map<String, Object> request) {
+        return locationService.callSyncApi();
+    }
+
+    @GetMapping("/call/api/async")
+    public Future<String> asyncGet(@RequestBody Map<String, Object> request) {
+        return locationService.callAsyncApi();
+    }
+    // ASYNC REQUEST END
 
 }
