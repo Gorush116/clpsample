@@ -2,6 +2,7 @@ package com.clp.stexample.common.service;
 
 import com.clp.stexample.common.enums.ApiEndpoint;
 import com.clp.stexample.common.exception.ApiException;
+import com.clp.stexample.common.request.ApiRequest;
 import com.clp.stexample.common.response.ApiFailResponse;
 import com.clp.stexample.common.response.ApiResponse;
 import com.clp.stexample.common.response.ApiSuccessResponse;
@@ -137,4 +138,5 @@ public class ApiService {
 
         return uri;
     }
+
 }

@@ -11,7 +11,6 @@ import org.springframework.web.client.HttpStatusCodeException;
 import java.util.Map;
 import java.util.Optional;
 
-// 해당 클래스가 전역적인 예외처리를 담당함
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
