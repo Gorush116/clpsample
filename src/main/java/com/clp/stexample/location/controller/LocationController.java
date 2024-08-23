@@ -12,6 +12,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.concurrent.Future;
 
 import static com.clp.stexample.common.enums.locations.Locations.*;
 import static com.clp.stexample.common.enums.locations.Locations.DELETE_A_LOCATION;
@@ -94,5 +95,18 @@ public class LocationController {
         return locationService.callApi(HttpMethod.DELETE, request, Object.class);
     }
     // API REQUEST TEMPLATE END
+
+
+    // ASYNC REQUEST START
+    @GetMapping("/call/api/sync")
+    public String syncGet(@RequestBody Map<String, Object> request) {
+        return locationService.callSyncApi();
+    }
+
+    @GetMapping("/call/api/async")
+    public Future<String> asyncGet(@RequestBody Map<String, Object> request) {
+        return locationService.callAsyncApi();
+    }
+    // ASYNC REQUEST END
 
 }

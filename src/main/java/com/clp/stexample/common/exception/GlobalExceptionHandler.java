@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
         ApiFailResponse<?> response = new ApiFailResponse<>(
                 status,
                 Map.of("message", "An unexpected error occurred " + ex.getMessage()),
-                null
+                Map.of()
         );
 
         return new ResponseEntity<>(response, status);

@@ -24,7 +24,7 @@
 
 CLP Service 외부 REST API 통신을 위한 공통 인터페이스의 주요 기능에 대한 설명입니다.
 
-이 문서는 SmartThings API 를 기준으로 작성으며, SmartThings 개인 권한 토큰이 필요합니다.
+이 문서는 SmartThings API 를 기준으로 작성되었으며, SmartThings 개인 권한 토큰이 필요합니다.
 
 - SmartThings API Docs : <https://developer.smartthings.com/docs/api/public>
 
@@ -53,7 +53,7 @@ CLP Service 외부 REST API 통신을 위한 공통 인터페이스의 주요 �
 │  │  │              ├─common                       // 공통 패키지
 │  │  │              │  ├─config                        // 공통 설정정보 
 │  │  │              │  ├─enums                         // API endpoint Enum 정보
-│  │  │              │  ├─error                         // error에 대한 Enum 정보
+│  │  │              │  ├─error                         // Error에 대한 Enum 정보
 │  │  │              │  ├─exception                     // 예외 처리에 대한 클래스
 │  │  │              │  ├─request                       // 공통 요청에 대한 클래스
 │  │  │              │  ├─response                      // 공통 응답에 대한 클래스
@@ -66,7 +66,7 @@ CLP Service 외부 REST API 통신을 위한 공통 인터페이스의 주요 �
 │  │  │              │  └─service                   // Sample Service
 │  │  │              └─room
 │  │  │                  └─controller
-│  │  └─resources
+│  │  └─resources                                   // 설정 파일 등
 ```
 
 
@@ -128,7 +128,8 @@ api:
 
 `[RestClient 설정]`
 
-> - RestTemplate의 경우 PATCH Method 적용시 추가적인 설정이 필요하며, 비동기 호출 가능성 고려하여 RestClient 로 결정함
+> - RestTemplate의 경우 PATCH Method 적용시 추가적인 설정이 필요하여 Spring boot 3.2 부터 지원하는 RestClient 사용
+
 
 ```java
 import org.springframework.context.annotation.Bean;
@@ -150,9 +151,20 @@ public class RestClientConfig {
 
 ### 3-1. API 호출 모듈
 
-`com.clp.stexample.common.service`
 
 ####  1. Enum을 통한 API 호출
+
+`Sample Controller(LocationController)`
+```java
+@Operation(summary = "장소 목록 조회", description = "장소 목록을 가져온다.")
+@GetMapping("/locations")
+public ApiResponse getLocationList() {
+   return apiService.call(LIST_LOCATIONS);
+}
+```
+
+`com.clp.stexample.common.service`
+
 ```java
 @Service
 @Slf4j
