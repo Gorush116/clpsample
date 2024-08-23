@@ -4,6 +4,7 @@ import com.clp.stexample.common.request.ApiRequest;
 import com.clp.stexample.common.response.ApiResponse;
 import com.clp.stexample.common.service.ApiService;
 import com.clp.stexample.location.request.LocationReq;
+import com.clp.stexample.location.service.LocationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,6 +24,8 @@ import static com.clp.stexample.common.enums.locations.Rooms.*;
 public class LocationController {
 
     private final ApiService apiService;
+
+    private final LocationService locationService;
 
     @Operation(summary = "장소 목록 조회", description = "장소 목록을 가져온다.")
     @GetMapping("/locations")
@@ -65,4 +68,10 @@ public class LocationController {
     public ApiResponse getRoom(@PathVariable String locationId, @PathVariable String roomId, @RequestBody Map<String, Object> request) {
         return apiService.callWithRequest(LIST_ROOMS, request, locationId, roomId);
     }
+
+    @GetMapping("/call/api/request")
+    public ApiResponse getLocationList(@RequestBody Map<String, Object> request) {
+        return locationService.getLocationList(request);
+    }
+
 }

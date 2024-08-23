@@ -109,11 +109,50 @@ public class ApiService {
     }
 
     /**
+     * ApiRequest를 인자로 API 요청을 호출합니다.
+     * 1. HTTP Method/uri/header SET
+     * 2. (body 내용 존재시) body SET
+     * 3. SEND REQUEST & GET RESPONSE
+     * 4. 응답값에 따른 처리
+     *      - 성공시 ApiSuccessResponse return
+     *      - 예외 발생시 ApiFailResponse return 또는 throw CustomException
+     * @param req API request body (header, method, url, body, response type 포함)
+     * @return API 요청의 응답
+     */
+    public ApiResponse execute(ApiRequest<?> req)  {
+        try {
+            // HTTP METHOD & URI SET
+            var request = restClient.method(req.getMethod())
+                    .uri(req.getUrl())
+                    .headers(headersSpec -> headersSpec.putAll(req.getHeaders()));
+
+            // Optional을 사용하여 body가 있을 때만 SET
+            Optional.ofNullable(req.getBody()).ifPresent(request::body);
+
+            // SEND REQUEST & GET RESPONSE
+            var responseBody = request.retrieve()
+                    .body(req.getResponseType());
+
+            return ApiSuccessResponse.of(responseBody);
+
+        } catch (HttpStatusCodeException ex) {
+            log.error("HttpStatusCodeException occurred when calling : {} ", req.getUrl(), ex);
+            return ApiFailResponse.fromHttpException(ex, req.getBody());
+        } catch (ApiException ex) {
+            log.error("ApiException occurred when calling : {} ", req.getUrl(), ex);
+            throw new ApiException(ex.getMessage(), 40001);
+        } catch (Exception ex) {
+            log.error("Exception occurred when calling : {}", req.getUrl(), ex);
+            return ApiFailResponse.fromException(ex, req.getBody());
+        }
+    }
+
+    /**
      * API 호출을 위한 HTTP 헤더를 반환합니다.
      *
      * @return HTTP 헤더
      */
-    private HttpHeaders createHeaders() {
+    public HttpHeaders createHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
         headers.set("Content-Type", "application/json");
@@ -138,5 +177,4 @@ public class ApiService {
 
         return uri;
     }
-
 }

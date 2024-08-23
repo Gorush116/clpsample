@@ -38,6 +38,7 @@ CLP Service 외부 REST API 통신을 위한 공통 인터페이스의 목적과
 ```
 [자바] Java : 22
 [스프링 부트] org.springframework.boot : 3.3.2
+[빌드 도구] maven
 ```
 
 
@@ -280,10 +281,81 @@ public class ApiService {
 ```
 
 
-#### 2. API 호출시 직접 입력(추가 예정)
+#### 2. API 호출시 직접 입력
+
+`Sample Controller(LocationController)`
+```java
+@GetMapping("/call/api/request")
+    public ApiResponse getLocationList(@RequestBody Map<String, Object> request) {
+        return locationService.getLocationList(request);
+    }
+```
+
+`Sample Service(sample service)`
 
 ```java
+@Service
+@RequiredArgsConstructor
+public class LocationService {
 
+   private final ApiService apiService;
+
+   public ApiResponse getLocationList(Object req) {
+
+      return apiService.execute(ApiRequestBuilder.builder()
+              .headers(apiService.createHeaders())                // header
+              .method(HttpMethod.GET)                             // HTTP Method
+              .url("https://api.smartthings.com/v1/locations")    // url
+              .body(req)                                          // request body
+              .responseType(Object.class)                         // response type
+              .build()
+      );
+   }
+}
+
+
+```
+
+`public ApiResponse execute(ApiRequest<?> req)`
+```java
+    /**
+     * ApiRequest를 인자로 API 요청을 호출합니다.
+     * 1. HTTP Method/uri/header SET
+     * 2. (body 내용 존재시) body SET
+     * 3. SEND REQUEST & GET RESPONSE
+     * 4. 응답값에 따른 처리
+     *      - 성공시 ApiSuccessResponse return
+     *      - 예외 발생시 ApiFailResponse return 또는 throw CustomException
+     * @param req API request body (header, method, url, body, response type 포함)
+     * @return API 요청의 응답
+     */
+    public ApiResponse execute(ApiRequest<?> req)  {
+        try {
+            // HTTP METHOD & URI SET
+            var request = restClient.method(req.getMethod())
+                    .uri(req.getUrl())
+                    .headers(headersSpec -> headersSpec.putAll(req.getHeaders()));
+
+            // Optional을 사용하여 body가 있을 때만 SET
+            Optional.ofNullable(req.getBody()).ifPresent(request::body);
+
+            // SEND REQUEST & GET RESPONSE
+            var responseBody = request.retrieve()
+                    .body(req.getResponseType());
+
+            return ApiSuccessResponse.of(responseBody);
+
+        } catch (HttpStatusCodeException ex) {
+            log.error("HttpStatusCodeException occurred when calling : {} ", req.getUrl(), ex);
+            return ApiFailResponse.fromHttpException(ex, req.getBody());
+        } catch (ApiException ex) {
+            log.error("ApiException occurred when calling : {} ", req.getUrl(), ex);
+            throw new ApiException(ex.getMessage(), 40001);
+        } catch (Exception ex) {
+            log.error("Exception occurred when calling : {}", req.getUrl(), ex);
+            return ApiFailResponse.fromException(ex, req.getBody());
+        }
+    }
 ```
 
 
@@ -341,6 +413,7 @@ public enum Locations implements ApiEndpoint {
     }
 }
 ```
+#### 2. 직접 HTTP method 지정
 
 ### 3-3. 예외 처리
 
