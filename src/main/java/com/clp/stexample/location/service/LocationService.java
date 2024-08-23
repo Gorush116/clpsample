@@ -4,19 +4,16 @@ import com.clp.stexample.common.request.ApiRequestBuilder;
 import com.clp.stexample.common.response.ApiResponse;
 import com.clp.stexample.common.service.ApiService;
 import com.clp.stexample.common.utils.RequestUtils;
-import com.clp.stexample.location.request.LocationReq;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import static java.util.Objects.nonNull;
 
 @Service
 @RequiredArgsConstructor
