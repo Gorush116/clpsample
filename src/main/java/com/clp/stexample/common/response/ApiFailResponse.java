@@ -41,18 +41,45 @@ public class ApiFailResponse<T> extends ApiResponse {
         this.inputData = inputData;
     }
 
+    /**
+     * 에러 코드와 에러 메시지를 통한 응답 실패를 반환합니다.
+     * @param errorCode
+     * @param errorDetails
+     * @return
+     * @param <T>
+     */
     public static <T> ApiFailResponse<T> of(String errorCode, Map<String, Object> errorDetails) {
         return new ApiFailResponse<>("error", "Operation failed", errorCode, errorDetails, null);
     }
 
+    /**
+     * 예외와 입력데이터를 통한 응답 실패를 반환합니다.
+     * @param e
+     * @param inputData
+     * @return
+     * @param <T>
+     */
     public static <T> ApiFailResponse<T> fromException(Exception e, T inputData) {
         return new ApiFailResponse<>(e, inputData);
     }
 
+    /**
+     * HttpStatusCodeException 와 입력데이터를 통한 응답 실패를 반환합니다.
+     * @param e
+     * @param inputData
+     * @return
+     * @param <T>
+     */
     public static <T> ApiFailResponse<T> fromHttpException(HttpStatusCodeException e, T inputData) {
         return new ApiFailResponse<>(resolveHttpStatus(e), parseErrorDetails(e), inputData);
     }
 
+    /**
+     * HttpStatusCodeException 를 통해 HTTP 상태코드를 반환합니다.
+     * - 일치하는 상태코드가 없을 때 INTERNAL_SERVER_ERROR 를 반환합니다.
+     * @param e
+     * @return
+     */
     private static HttpStatus resolveHttpStatus(HttpStatusCodeException e) {
         HttpStatus status = HttpStatus.resolve(e.getStatusCode().value());
         if (status == null) {
@@ -62,6 +89,13 @@ public class ApiFailResponse<T> extends ApiResponse {
         return status;
     }
 
+    /**
+     * 에러 상세내용을 변환하여 반환합니다.
+     * - 응답 본문이 존재하지 않을 경우 기본 메시지를 반환합니다.
+     * - 응답 본문 JSON 변환 실패시 에러 로그와 동시에 메시지를 반환합니다.
+     * @param e
+     * @return
+     */
     private static Map<String, Object> parseErrorDetails(HttpStatusCodeException e) {
         Map<String, Object> errorDetails = new HashMap<>();
         try {

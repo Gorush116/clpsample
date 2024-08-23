@@ -1,7 +1,7 @@
 package com.clp.stexample.location.controller;
 
 import com.clp.stexample.common.response.ApiResponse;
-import com.clp.stexample.common.service.CommonApiService;
+import com.clp.stexample.common.service.ApiService;
 import com.clp.stexample.location.request.LocationReq;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,7 +21,7 @@ import static com.clp.stexample.common.enums.locations.Rooms.*;
 @Tag(name = "Locations API", description = "SmartThings API 중 Locations에 대한 설명입니다. SmartThings에서 발급 받은 토큰이 필요합니다.")
 public class LocationController {
 
-    private final CommonApiService apiService;
+    private final ApiService apiService;
 
     @Operation(summary = "장소 목록 조회", description = "장소 목록을 가져온다.")
     @GetMapping("/locations")

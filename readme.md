@@ -58,6 +58,7 @@ CLP Service 외부 REST API 통신을 위한 공통 인터페이스의 목적과
 │  │  │              │  ├─error                     // error에 대한 Enum 정보
 │  │  │              │  ├─exception                 // 예외 처리에 대한 클래스
 │  │  │              │  ├─model
+│  │  │              │  ├─request                  // 공통 요청에 대한 클래스
 │  │  │              │  ├─response                  // 공통 응답에 대한 클래스
 │  │  │              │  └─service                   // 공통 API 호출에 대한 클래스
 │  │  │              ├─device

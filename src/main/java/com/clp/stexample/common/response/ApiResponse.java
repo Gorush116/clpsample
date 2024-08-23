@@ -7,6 +7,7 @@ import java.time.ZonedDateTime;
 
 @Getter
 public abstract class ApiResponse {
+
     private final String status;
     private final String message;
     private final ZonedDateTime timestamp;

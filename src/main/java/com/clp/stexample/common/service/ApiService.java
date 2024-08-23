@@ -20,7 +20,7 @@ import java.util.Optional;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class CommonApiService {
+public class ApiService {
 
     private final RestClient restClient;
 
@@ -33,23 +33,48 @@ public class CommonApiService {
     private String token;
 
     /**
-     * 주어진 API 요청을 호출합니다.
+     * request param이 없는 API 요청을 호출합니다.
      * - path parameter 를 제외한 parameter를 포함하여 호출시 callWithRequest를 통해 호출하여야 합니다.
      * - 메서드 호출시 path parameter 가 2개 이상일 때, parameter 순서를 맞추어 인자를 넘겨주어야 합니다.
-     * @param endpoint
-     * @param uriVariables
-     * @return
+     * @param endpoint ApiEndpoint를 구현한 Enum
+     * @param uriVariables @PathVariable로 지정한 1개 이상의 parameter
+     * @return API 요청의 응답
      */
     public ApiResponse call(ApiEndpoint endpoint, Object... uriVariables) {
         return callWithRequest(endpoint, null, uriVariables);
     }
 
+    /**
+     * request param이 포함된 API 요청을 호출합니다.
+     * - 메서드 호출시 path parameter 가 2개 이상일 때, parameter 순서를 맞추어 인자를 넘겨주어야 합니다.
+     * 1. uriVariables 존재시 Enum의 pathVariable의 내용을 replace
+     * 2. header 생성
+     * 3. API 요청
+     *
+     * @param endpoint ApiEndpoint를 구현한 Enum
+     * @param request 요청 본문
+     * @param uriVariables @PathVariable로 지정한 1개 이상의 parameter
+     * @return API 요청의 응답
+     */
     public ApiResponse callWithRequest(ApiEndpoint endpoint, Object request, Object... uriVariables) {
         String uri = buildUri(endpoint, uriVariables);
         HttpEntity<?> entity = new HttpEntity<>(request, createHeaders());
         return exchange(uri, endpoint.getMethod(), entity);
     }
 
+    /**
+     * restClient를 통하여 API 요청을 호출합니다.
+     * 1. HTTP Method/uri/header SET
+     * 2. (body 내용 존재시) body SET
+     * 3. SEND REQUEST & GET RESPONSE
+     * 4. 응답값에 따른 처리
+     *      - 성공시 ApiSuccessResponse return 
+     *      - 예외 발생시 ApiFailResponse return 또는 throw CustomException
+     * @param uri API 요청 uri
+     * @param method HTTP Method
+     * @param entity Header 및 request body 정보 포함
+     * @return API 요청의 응답
+     */
     public ApiResponse exchange(
             String uri,
             HttpMethod method,
@@ -82,7 +107,11 @@ public class CommonApiService {
         }
     }
 
-    // Header 생성
+    /**
+     * API 호출을 위한 HTTP 헤더를 반환합니다.
+     *
+     * @return HTTP 헤더
+     */
     private HttpHeaders createHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
@@ -90,7 +119,15 @@ public class CommonApiService {
         return headers;
     }
 
-    // Enum과 Request의 pathParameter 매핑
+    /**
+     * API 호출을 위한 uri를 세팅합니다.
+     * - Enum path parameter 를 request pathParameter 에 매핑합니다.
+     * - 이 때, Enum 명시된 uri path parameter 순서와 uriVariables에 포함된 path parameter의 순서가 일치해야 합니다.
+     *   (동작방식 : for문을 통해 replaceFirst 메서드로 최초 문자열 대체)
+     * @param endpoint
+     * @param uriVariables
+     * @return uri
+     */
     public String buildUri(ApiEndpoint endpoint, Object... uriVariables) {
         String uri = apiBaseUrl + endpoint.getUrl();
 
