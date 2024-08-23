@@ -285,10 +285,10 @@ public class ApiService {
 
 `Sample Controller(LocationController)`
 ```java
-@GetMapping("/call/api/request")
-    public ApiResponse getLocationList(@RequestBody Map<String, Object> request) {
-        return locationService.getLocationList(request);
-    }
+@GetMapping("/call/api/get")
+public ApiResponse get(@RequestBody Map<String, Object> request) {
+   return locationService.callApi(HttpMethod.GET, request, Object.class);
+}
 ```
 
 `Sample Service(sample service)`
@@ -300,14 +300,22 @@ public class LocationService {
 
    private final ApiService apiService;
 
-   public ApiResponse getLocationList(Object req) {
-
-      return apiService.execute(ApiRequestBuilder.builder()
-              .headers(apiService.createHeaders())                // header
-              .method(HttpMethod.GET)                             // HTTP Method
-              .url("https://api.smartthings.com/v1/locations")    // url
-              .body(req)                                          // request body
-              .responseType(Object.class)                         // response type
+   /**
+    * API request template을 통해 외부 API를 호출합니다.
+    * - 요청 정보를 직접 입력하여 API를 호출합니다.
+    * @param method HTTP Method
+    * @param req 요청 본문
+    * @param responseType 응답 본문 타입
+    * @return API 응답
+    * @param <T> 응답 타입
+    */
+   public <T> ApiResponse callApi(HttpMethod method, Object req, Class<T> responseType) {
+      return apiService.execute(ApiRequestBuilder.<T>builder()
+              .headers(apiService.createHeaders())
+              .method(method)
+              .url("https://api.smartthings.com/v1/locations")
+              .body(Objects.requireNonNullElse(req, new Object()))
+              .responseType(responseType)
               .build()
       );
    }
@@ -319,7 +327,7 @@ public class LocationService {
 `public ApiResponse execute(ApiRequest<?> req)`
 ```java
     /**
-     * ApiRequest를 인자로 API 요청을 호출합니다.
+     * Api request를 인자로 API 요청을 호출합니다.
      * 1. HTTP Method/uri/header SET
      * 2. (body 내용 존재시) body SET
      * 3. SEND REQUEST & GET RESPONSE
