@@ -30,11 +30,6 @@
         <java.version>22</java.version>
     </properties>
     <dependencies>
-        <!--validation dependency-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -46,6 +41,11 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
@@ -55,7 +55,12 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--swagger 작성을 위한 dependency-->
+        <!--validation dependency-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <!--swagger dependency-->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
@@ -64,6 +69,7 @@
         
         <!--boot path security dependency-->
         <dependency>
+<<<<<<< HEAD
 		    <groupId>org.springframework.boot</groupId>
 		    <artifactId>spring-boot-starter-security</artifactId>
 		    <version>3.3.2</version>
@@ -81,6 +87,12 @@
 	        <version>2.1.4</version>
         </dependency>
 		
+=======
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+            <version>3.3.2</version>
+        </dependency>
+>>>>>>> 9b40eebe3b009d1ed175cceb47eb4960cb90c96c
     </dependencies>
 
     <build>

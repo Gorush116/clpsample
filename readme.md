@@ -49,26 +49,29 @@ CLP Service 외부 REST API 통신을 위한 공통 인터페이스의 주요 �
 │  │  ├─java
 │  │  │  └─com
 │  │  │      └─clp
-│  │  │          └─stexample
+│  │  │          └─service
 │  │  │              ├─common                       // 공통 패키지
 │  │  │              │  ├─config                        // 공통 설정정보 
+│  │  │              │  │  ├─rest
+│  │  │              │  │  ├─security
+│  │  │              │  │  └─swagger
 │  │  │              │  ├─enums                         // API endpoint Enum 정보
+│  │  │              │  │  ├─automations
+│  │  │              │  │  ├─devices
+│  │  │              │  │  └─locations
 │  │  │              │  ├─error                         // Error에 대한 Enum 정보
 │  │  │              │  ├─exception                     // 예외 처리에 대한 클래스
 │  │  │              │  ├─request                       // 공통 요청에 대한 클래스
 │  │  │              │  ├─response                      // 공통 응답에 대한 클래스
 │  │  │              │  └─service                       // 공통 API 호출에 대한 클래스
-│  │  │              │  ├─exception                     // 공통 API 호출 유틸리티에 대한 클래스
-│  │  │              ├─location
-│  │  │              │  ├─controller                // Sample Controller
-│  │  │              │  ├─dto                       // Sample Location Dto
-│  │  │              │  ├─request                   // Sample Location Request
-│  │  │              │  └─service                   // Sample Service
-│  │  │              └─room
-│  │  │                  └─controller
+│  │  │              │  ├─utils                         // 공통 API 호출 유틸리티에 대한 클래스
+│  │  │              └─location
+│  │  │                  ├─controller                   // Sample Location Controller
+│  │  │                  ├─dao                          // Sample Location DAO
+│  │  │                  ├─request                      // Sample Location Request
+│  │  │                  └─service                      // Sample Location Service
 │  │  └─resources                                   // 설정 파일 등
 ```
-
 
 ### 2-1. 의존성
 `[pom.xml]`
@@ -163,7 +166,7 @@ public ApiResponse getLocationList() {
 }
 ```
 
-`com.clp.stexample.common.service`
+`com.clp.service.common.service`
 
 ```java
 @Service
@@ -356,7 +359,7 @@ public class LocationService {
 ### 3-2. HTTP 메소드 사용법
 
 #### 1. Enum에 저장된 HTTP 메소드 사용
-`com.clp.stexample.common.enums.automations`
+`com.clp.service.common.enums.automations`
 
 >  * Enum 사용시 ApiEndpoint 인터페이스를 구현해야 합니다. 
 
@@ -409,9 +412,11 @@ public enum Locations implements ApiEndpoint {
 ```
 #### 2. 직접 HTTP method 지정
 
+> [API 호출시 직접 입력](#2-api-호출시-직접-입력) 참조
+
 ### 3-3. 예외 처리
 
-`com.clp.stexample.common.exception`
+`com.clp.service.common.exception`
 
 > * GlobalExceptionHandler 클래스에서 특정 예외나 전역 예외 핸들링 정의
 >   * 커스텀 예외의 경우 클래스 생성 후 @ExceptionHandler 어노테이션에 매핑하여 핸들링 가능
@@ -555,6 +560,6 @@ public class LocationReq {
 
 ### 5-1. 주석 및 코드 예제
 
-프로젝트 내 `com.clp.stexample` 패키지 참조
+프로젝트 내 `com.clp.service` 패키지 참조
 
 ---
